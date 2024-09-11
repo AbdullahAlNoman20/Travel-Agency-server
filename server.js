@@ -37,13 +37,15 @@ db.connect((error)=>{
 
 
 
+
+
 app.get('/',(req,res)=>{
     return res.json("Server is running")
 })
 
 
-app.get("/userinfo",(req,res)=>{
-   const sql = "SELECT * FROM userinfo";
+app.get("/register_users",(req,res)=>{
+   const sql = "SELECT * FROM register_users";
    db.query(sql,(err,data)=>{
     if(err){
         console.error("error " + err.stack)
@@ -53,6 +55,22 @@ app.get("/userinfo",(req,res)=>{
    })
 })
 
+
+
+// Post Data In DB
+app.post('/register_users',(req,res)=>{
+   const sql = "INSERT INTO register_users (`userName`,`number`,`email`,`password`) VALUES (?,?,?,?)"
+    const values = [ 
+        req.body.userName,
+        req.body.number,
+        req.body.email,
+        req.body.password
+    ]
+    db.query(sql,[values],(err,data)=>{
+        if(err)return res.json(err)
+            return res.json("Created")
+    })
+})
 
 
 
