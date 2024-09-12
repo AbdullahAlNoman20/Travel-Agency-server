@@ -33,12 +33,6 @@ db.connect((error)=>{
 
 
 
-
-
-
-
-
-
 app.get('/',(req,res)=>{
     return res.json("Server is running")
 })
@@ -58,18 +52,22 @@ app.get("/register_users",(req,res)=>{
 
 
 // Post Data In DB
-app.post('/register_users',(req,res)=>{
-   const sql = "INSERT INTO register_users (`userName`,`number`,`email`,`password`) VALUES (?,?,?,?)"
-    const values = [ 
-        req.body.userName,
-        req.body.number,
-        req.body.email,
-        req.body.password
-    ]
-    db.query(sql,[values],(err,data)=>{
-        if(err)return res.json(err)
-            return res.json("Created")
-    })
+app.post('/register_users', async(req,res)=>{
+
+        const userName =  req.body.userName
+        // const number = req.body.number
+        const email = req.body.email
+        const password = req.body.password
+
+      db.query ("INSERT INTO register_users (userName,email,password) VALUES(?,?,?)",[userName,email,password]),
+        (err,result)=>{
+            if(result){
+                res.send(result)
+            }
+            else{
+                res.send(err)
+            }
+        }
 })
 
 
