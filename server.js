@@ -42,7 +42,7 @@ app.get('/',(req,res)=>{
     return res.json("Server is running")
 })
 
-
+// Show All User Info
 app.get("/register_users",(req,res)=>{
    const sql = "SELECT * FROM register_users";
    db.query(sql,(err,data)=>{
@@ -53,6 +53,33 @@ app.get("/register_users",(req,res)=>{
     return res.json(data)
    })
 })
+
+// Show All packages Info
+app.get("/package",(req,res)=>{
+   const sql = "SELECT * FROM package";
+   db.query(sql,(err,data)=>{
+    if(err){
+        console.error("error " + err.stack)
+        return res.json("Error occurs: beep beep")
+    }
+    return res.json(data)
+   })
+})
+
+// Specific Package
+app.get('/package_details/:id',(req,res)=>{
+    const id = req.params.id;
+    const query = 'SELECT * FROM package WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+     if(err){
+        console.error('Error fetching package:', err);
+        res.status(500).send('Error fetching package');
+    }
+     else {
+        res.json(result[0]);
+      }
+    })
+ })
 
 
 
@@ -96,6 +123,61 @@ app.post('/package', async(req,res)=>{
             }
         }
 })
+
+
+// Delete Single Data
+app.delete('/delete_package/:id', (req, result) => {
+    const id = req.params.id;
+  
+    const query = 'DELETE FROM package WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+      if (err) {
+        console.error('Error deleting data:', err);
+        res.status(500).send('Error deleting data');
+      } else {
+        res.send(`Deleted entry with ID: ${id}`);
+      }
+    });
+  });
+
+// Update Packages
+app.get('/update_package/:id',(req,res)=>{
+    const id = req.params.id;
+    const query = 'SELECT * FROM package WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+     if(err){
+        console.error('Error fetching package:', err);
+        res.status(500).send('Error fetching package');
+    }
+     else {
+        res.json(result[0]);
+      }
+    })
+ })
+
+app.put('/updated_package/:id',async(req, res) => {
+    const id = req.params.id;
+    const updatedPackage = req.body;
+    console.log(updatedPackage)
+    const { placeName, description } = req.body;
+  
+    const query = 'UPDATE package SET placeName = ?, description = ? WHERE id = ?';
+    db.query(query, [placeName, description, id], (err, result) => {
+      if (err) {
+        console.error('Error updating data:', err);
+        res.status(500).send('Error updating data');
+      } 
+      if (result.affectedRows === 0) {
+        // No rows updated, possibly because the package ID doesn't exist
+        return res.status(404).json({ error: 'Package not found' });
+      }
+      else {
+        // alert('Updated Successfully')
+        res.send(`Updated entry with ID: ${id}`);
+      }
+    });
+  });
+
 
 
 
