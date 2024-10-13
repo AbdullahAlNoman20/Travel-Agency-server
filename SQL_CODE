@@ -1,0 +1,5 @@
+Add New Column in any existing Table:
+# ALTER TABLE table_name ADD column_name datatype PRIMARY KEY AUTO_INCREMENT;
+
+Queries:
+1. 

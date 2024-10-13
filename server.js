@@ -90,7 +90,8 @@ app.post('/register_users', async(req,res)=>{
         const userName =  req.body.userName
         const email = req.body.email
         const password = req.body.password
-    // console.log(newUser)
+    console.log(newUser)
+    // newUser.id = register_users.length + 1;
 
       db.query ("INSERT INTO register_users (userName,email,password) VALUES(?,?,?)",[userName,email,password]),
         (err,result)=>{
@@ -111,7 +112,7 @@ app.post('/package', async(req,res)=>{
         const placeName =  req.body.placeName
         const description = req.body.description
         
-    // console.log(newPackage)
+    console.log(newPackage)
 
       db.query ("INSERT INTO package (placeName,description) VALUES(?,?)",[placeName,description]),
         (err,result)=>{
