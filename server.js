@@ -4,7 +4,6 @@ const cors = require('cors')
 const port = process.env.PORT || 5000;
 const app = express()
 
-
 require('dotenv').config();
 
 
@@ -34,6 +33,50 @@ db.connect((error)=>{
         console.log("Successfully Connect with sql DB")
     }
 })
+
+
+// Gemini SetUp
+// Make sure to include these imports:
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+// Generate Prompt
+// app.get("/prompt", async(req,res)=>{
+//   const prompt = "write a Story About a AI And magic"
+//   const result = await model.generateContent(prompt)
+//   const response = await result.response;
+//   const text = response.text();
+//   res.send({data: text, status: 200})
+//   console.log(text);
+
+// })
+
+const form = `
+<form method="POST" action="/prompt"> 
+  <textarea name="prompt"id="prompt"></textarea>
+  <button type="submit"> Generate </button>
+</form>
+`;
+
+app.use(express.urlencoded({extended:true}))
+
+app.get("/prompt",async(req,res)=>{
+  res.send(form)
+})
+
+app.post("/prompt", async(req,res)=>{
+  const {prompt} = req.body;
+  const result = await model.generateContent(prompt)
+  const response = await result.response;
+  const text = response.text();
+  // res.send({data: prompt, status: 200})
+  res.send({data: text, status: 200})
+  // console.log(text);
+
+})
+
+
 
 
 
@@ -87,13 +130,14 @@ app.get('/package_details/:id',(req,res)=>{
 app.post('/register_users', async(req,res)=>{
 
     const newUser = req.body;
-        const userName =  req.body.userName
+        const username =  req.body.username
         const email = req.body.email
         const password = req.body.password
+        const number = req.body.number
     console.log(newUser)
     // newUser.id = register_users.length + 1;
 
-      db.query ("INSERT INTO register_users (userName,email,password) VALUES(?,?,?)",[userName,email,password]),
+      db.query ("INSERT INTO register_users (username,email,password,number) VALUES(?,?,?,?)",[username,email,password,number]),
         (err,result)=>{
             if(result){
                 res.send(result)
@@ -126,7 +170,7 @@ app.post('/package', async(req,res)=>{
 })
 
 
-// Delete Single Data
+// Delete Single package
 app.delete('/delete_package/:id', (req, result) => {
     const id = req.params.id;
   
@@ -134,7 +178,21 @@ app.delete('/delete_package/:id', (req, result) => {
     db.query(query, [id], (err, result) => {
       if (err) {
         console.error('Error deleting data:', err);
-        res.status(500).send('Error deleting data');
+      } else {
+        res.send(`Deleted entry with ID: ${id}`);
+      }
+    });
+  });
+
+
+// Delete Single user
+app.delete('/register_users/:id', (req, result) => {
+    const id = req.params.id;
+  
+    const query = 'DELETE FROM register_users WHERE id = ?';
+    db.query(query, [id], (err, result) => {
+      if (err) {
+        console.error('Error deleting data:', err);
       } else {
         res.send(`Deleted entry with ID: ${id}`);
       }
