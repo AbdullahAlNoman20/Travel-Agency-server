@@ -171,30 +171,42 @@ app.post('/package', async(req,res)=>{
 
 
 // Delete Single package
-app.delete('/delete_package/:id', (req, result) => {
+app.delete('/delete_package/:id', (req, res) => {
     const id = req.params.id;
   
     const query = 'DELETE FROM package WHERE id = ?';
     db.query(query, [id], (err, result) => {
       if (err) {
         console.error('Error deleting data:', err);
-      } else {
-        res.send(`Deleted entry with ID: ${id}`);
+        res.status(500).json({ error: 'Failed to delete package' });
+      }
+      else {
+        if (result.affectedRows > 0) {
+          res.json({ deletedCount: result.affectedRows });
+        } else {
+          res.status(404).json({ error: 'Package not found' });
+        }
       }
     });
   });
 
 
 // Delete Single user
-app.delete('/register_users/:id', (req, result) => {
+app.delete('/register_users/:id', (req, res) => {
     const id = req.params.id;
   
     const query = 'DELETE FROM register_users WHERE id = ?';
     db.query(query, [id], (err, result) => {
       if (err) {
         console.error('Error deleting data:', err);
-      } else {
-        res.send(`Deleted entry with ID: ${id}`);
+        res.status(500).json({ error: 'Failed to delete package' });
+      }
+      else {
+        if (result.affectedRows > 0) {
+          res.json({ deletedCount: result.affectedRows });
+        } else {
+          res.status(404).json({ error: 'user not found' });
+        }
       }
     });
   });
@@ -233,6 +245,23 @@ app.put('/updated_package/:id',async(req, res) => {
       else {
         // alert('Updated Successfully')
         res.send(`Updated entry with ID: ${id}`);
+      }
+    });
+  });
+
+
+
+  // Search
+  app.post('/search', (req, res) => {
+    const { whereToGo, when, type } = req.body;
+  
+    const query = 'SELECT * FROM package WHERE destination = ? AND season = ? AND type = ?';
+    db.query(query, [whereToGo, when, type], (err, results) => {
+      if (err) {
+        console.error('Error searching data:', err);
+        res.status(500).json({ error: 'Search failed' });
+      } else {
+        res.json(results);
       }
     });
   });
