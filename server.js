@@ -110,10 +110,10 @@ app.get("/package",(req,res)=>{
 })
 
 // Specific Package
-app.get('/package_details/:id',(req,res)=>{
-    const id = req.params.id;
-    const query = 'SELECT * FROM package WHERE id = ?';
-    db.query(query, [id], (err, result) => {
+app.get('/package_details/:p_id',(req,res)=>{
+    const p_id = req.params.p_id;
+    const query = 'SELECT * FROM package WHERE p_id = ?';
+    db.query(query, [p_id], (err, result) => {
      if(err){
         console.error('Error fetching package:', err);
         res.status(500).send('Error fetching package');
@@ -253,10 +253,10 @@ app.put('/updated_package/:id',async(req, res) => {
 
   // Search
   app.post('/search', (req, res) => {
-    const { whereToGo, when, type } = req.body;
+    const {season} = req.body;
   
-    const query = 'SELECT * FROM package WHERE destination = ? AND season = ? AND type = ?';
-    db.query(query, [whereToGo, when, type], (err, results) => {
+    const query = 'SELECT * FROM package WHERE season = ?';
+    db.query(query, [season], (err, results) => {
       if (err) {
         console.error('Error searching data:', err);
         res.status(500).json({ error: 'Search failed' });
