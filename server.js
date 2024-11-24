@@ -3,7 +3,7 @@ const mysql = require('mysql')
 const cors = require('cors')
 const port = process.env.PORT || 5000;
 const app = express()
-
+const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 
@@ -86,12 +86,12 @@ app.get('/',(req,res)=>{
 })
 
 // Show All User Info
-app.get("/register_users",(req,res)=>{
-   const sql = "SELECT * FROM register_users";
+app.get("/user_info",(req,res)=>{
+   const sql = "SELECT * FROM user_info";
    db.query(sql,(err,data)=>{
     if(err){
         console.error("error " + err.stack)
-        return res.json("Error occurs: beep beep")
+        return res.json("Error occurs")
     }
     return res.json(data)
    })
@@ -127,17 +127,22 @@ app.get('/package_details/:p_id',(req,res)=>{
 
 
 // Post Data In DB
-app.post('/register_users', async(req,res)=>{
+app.post('/user_info', async(req,res)=>{
 
+  const salt = await bcrypt.genSalt(10)
+  const secPass = await bcrypt.hash(req.body.password , salt) 
     const newUser = req.body;
-        const username =  req.body.username
+        const name =  req.body.name
         const email = req.body.email
-        const password = req.body.password
         const number = req.body.number
+        const gender = req.body.gender
+        const role = req.body.role
+        const password = secPass
+        
     console.log(newUser)
-    // newUser.id = register_users.length + 1;
+    // newUser.id = user_info.length + 1;
 
-      db.query ("INSERT INTO register_users (username,email,password,number) VALUES(?,?,?,?)",[username,email,password,number]),
+      db.query ("INSERT INTO user_info (name,email,number,gender,role,password) VALUES(?,?,?,?,?,?)",[name,email,number,gender,role,password]),
         (err,result)=>{
             if(result){
                 res.send(result)
@@ -192,10 +197,10 @@ app.delete('/delete_package/:id', (req, res) => {
 
 
 // Delete Single user
-app.delete('/register_users/:id', (req, res) => {
+app.delete('/user_info/:id', (req, res) => {
     const id = req.params.id;
   
-    const query = 'DELETE FROM register_users WHERE id = ?';
+    const query = 'DELETE FROM user_info WHERE id = ?';
     db.query(query, [id], (err, result) => {
       if (err) {
         console.error('Error deleting data:', err);
