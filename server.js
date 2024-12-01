@@ -158,12 +158,21 @@ app.post('/user_info', async(req,res)=>{
 app.post('/package', async(req,res)=>{
 
     const newPackage = req.body
-        const placeName =  req.body.placeName
+        const name =  req.body.name
+        const a_id = req.body.a_id
+        const g_id = req.body.g_id
+        const category = req.body.category
+        const season = req.body.season
+        const duration = req.body.duration
+        const cost = req.body.cost
+        const location = req.body.location
         const description = req.body.description
+        const emergency = req.body.emergency
+        const photo = req.body.photo
         
     console.log(newPackage)
 
-      db.query ("INSERT INTO package (placeName,description) VALUES(?,?)",[placeName,description]),
+      db.query ("INSERT INTO package (name,description,a_id,g_id,category,season,duration,cost,location,emergency,photo) VALUES(?,?,?,?,?,?,?,?,?,?,?)",[name,description,a_id,g_id,category,season,duration,cost,location,emergency,photo]),
         (err,result)=>{
             if(result){
                 res.send(result)
@@ -176,10 +185,10 @@ app.post('/package', async(req,res)=>{
 
 
 // Delete Single package
-app.delete('/delete_package/:id', (req, res) => {
-    const id = req.params.id;
+app.delete('/delete_package/:p_id', (req, res) => {
+    const id = req.params.p_id;
   
-    const query = 'DELETE FROM package WHERE id = ?';
+    const query = 'DELETE FROM package WHERE p_id = ?';
     db.query(query, [id], (err, result) => {
       if (err) {
         console.error('Error deleting data:', err);
@@ -217,9 +226,9 @@ app.delete('/user_info/:id', (req, res) => {
   });
 
 // Update Packages
-app.get('/update_package/:id',(req,res)=>{
-    const id = req.params.id;
-    const query = 'SELECT * FROM package WHERE id = ?';
+app.get('/update_package/:p_id',(req,res)=>{
+    const id = req.params.p_id;
+    const query = 'SELECT * FROM package WHERE p_id = ?';
     db.query(query, [id], (err, result) => {
      if(err){
         console.error('Error fetching package:', err);
@@ -231,14 +240,14 @@ app.get('/update_package/:id',(req,res)=>{
     })
  })
 
-app.put('/updated_package/:id',async(req, res) => {
-    const id = req.params.id;
+app.put('/updated_package/:p_id',async(req, res) => {
+    const id = req.params.p_id;
     const updatedPackage = req.body;
     console.log(updatedPackage)
-    const { placeName, description } = req.body;
+    const { name,a_id,g_id,category,season,duration,cost,location,description,emergency,photo } = req.body;
   
-    const query = 'UPDATE package SET placeName = ?, description = ? WHERE id = ?';
-    db.query(query, [placeName, description, id], (err, result) => {
+    const query = 'UPDATE package SET name = ?, a_id=?, g_id=?, category=?, season=?, duration=?, cost=?, location=?, description = ?, emergency=?, photo=?  WHERE p_id = ?';
+    db.query(query, [name,a_id,g_id,category,season,duration,cost,location,description,emergency,photo,id], (err, result) => {
       if (err) {
         console.error('Error updating data:', err);
         res.status(500).send('Error updating data');
