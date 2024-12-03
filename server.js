@@ -97,6 +97,18 @@ app.get("/user_info",(req,res)=>{
    })
 })
 
+// Show All Guid Info
+app.get("/tour_guide_info",(req,res)=>{
+   const sql = "SELECT * FROM tour_guide_info";
+   db.query(sql,(err,data)=>{
+    if(err){
+        console.error("error " + err.stack)
+        return res.json("Error occurs")
+    }
+    return res.json(data)
+   })
+})
+
 // Show All packages Info
 app.get("/package",(req,res)=>{
    const sql = "SELECT * FROM package";
